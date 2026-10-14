@@ -1,32 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>专属页面</title>
     <style>
-        *{
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        #ssd{
-            min-width: 200px;
-            min-height: 200px;
-            background-color: lightpink;
-                }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a103d);
+            background-size: 400% 400%;
+            animation: bgMove 12s ease infinite;
+            font-family: "Microsoft Yahei", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* 背景流动动画 */
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 主文字发光+跳动特效 */
+        .main-text {
+            font-size: 90px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 8px #ff3366, 0 0 20px #ff3366, 0 0 40px #ff2255;
+            animation: textPulse 1.4s ease-in-out infinite alternate;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        @keyframes textPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.06); }
+        }
+
+        .btn-box {
+            display: flex;
+            gap: 24px;
+        }
+
+        button {
+            padding: 16px 32px;
+            font-size: 22px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #btn1 {
+            background: linear-gradient(45deg,#ff4477,#ff7799);
+            color: white;
+            box-shadow: 0 0 15px #ff4477;
+        }
+        #btn1:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 0 30px #ff4477;
+        }
+
+        #btn2 {
+            background: linear-gradient(45deg,#4488ff,#66aaff);
+            color: white;
+            box-shadow: 0 0 15px #4488ff;
+        }
+        #btn2:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 0 30px #4488ff;
+        }
+
+        #btn3 {
+            background: linear-gradient(45deg,#33dd88,#66ffaa);
+            color: #111;
+            box-shadow: 0 0 15px #33dd88;
+        }
+        #btn3:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 0 30px #33dd88;
+        }
+
+        /* 飘落彩色圆点粒子 */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
-    <div id="ssd">
-        <h1>叶斯冬小杂鱼</h1>
-    <button onclick="a()">他是gay</button>
-    <img width="400px" src="./140e6fc6092ebbcf29ee0764b16b45bceb97e71c35c1c-aepKXY_fw658webp.webp" />
-    <img width="400px" src="./b284e22577144f5daa67cc283fae3662.png" />
+    <div class="main-text">叶斯冬是小杂鱼</div>
 
+    <div class="btn-box">
+        <button id="btn1">放大文字</button>
+        <button id="btn2">切换颜色</button>
+        <button id="btn3">生成粒子特效</button>
     </div>
+
     <script>
-        function a(){
-            alert("叶斯冬是小杂鱼")
+        const textDom = document.querySelector('.main-text');
+        let scaleNum = 1;
+        let colorIndex = 0;
+        const colorList = [
+            "#ff3366",
+            "#33ddff",
+            "#ffdd33",
+            "#77ff44",
+            "#bb66ff"
+        ];
+
+        // 按钮1：放大文字
+        document.getElementById("btn1").onclick = function(){
+            scaleNum += 0.15;
+            textDom.style.transform = `scale(${scaleNum})`;
+        }
+
+        // 按钮2：切换发光颜色
+        document.getElementById("btn2").onclick = function(){
+            colorIndex = (colorIndex + 1) % colorList.length;
+            let c = colorList[colorIndex];
+            textDom.style.textShadow = `0 0 8px ${c}, 0 0 20px ${c}, 0 0 40px ${c}`;
+        }
+
+        // 按钮3：粒子飘落特效
+        document.getElementById("btn3").onclick = function(){
+            for(let i=0; i<80; i++){
+                createParticle();
+            }
+        }
+
+        function createParticle(){
+            const p = document.createElement("div");
+            p.classList.add("particle");
+            const size = Math.random()*12 + 4;
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.background = colorList[Math.floor(Math.random()*colorList.length)];
+            p.style.left = Math.random()*100 + "vw";
+            p.style.top = "-20px";
+            p.style.opacity = 0.8;
+            document.body.appendChild(p);
+
+            let speedY = Math.random() * 3 + 1;
+            let speedX = (Math.random()-0.5)*2;
+
+            function fall(){
+                let top = parseFloat(p.style.top);
+                let left = parseFloat(p.style.left);
+                top += speedY;
+                left += speedX;
+                p.style.top = top + "px";
+                p.style.left = left + "vw";
+                if(top > window.innerHeight){
+                    p.remove();
+                }else{
+                    requestAnimationFrame(fall);
+                }
+            }
+            fall();
         }
     </script>
 </body>
